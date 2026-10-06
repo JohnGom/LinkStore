@@ -70,7 +70,7 @@ export default function Dashboard({ initialCategories, initialLinks }: Props) {
 	return (
 		<div class="mx-auto flex max-w-6xl gap-6 px-4 py-6 lg:px-8">
 			<aside
-				class={`border-steel-border bg-deep-surface fixed inset-y-0 left-0 z-40 w-64 transform border-r p-4 transition-transform lg:static lg:z-auto lg:w-56 lg:shrink-0 lg:translate-x-0 lg:border-none lg:bg-transparent lg:p-0 ${
+				class={`border-steel-border bg-indigo-surface fixed inset-y-0 left-0 z-40 w-64 transform border-r p-4 transition-transform lg:static lg:z-auto lg:w-56 lg:shrink-0 lg:translate-x-0 lg:border-none lg:bg-transparent lg:p-0 ${
 					isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
 				}`}
 			>

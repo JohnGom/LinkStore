@@ -19,7 +19,7 @@ export default function AddLinkModal({ categories, onClose, onSubmit }: Props) {
 
 	return (
 		<div class="bg-midnight-canvas/70 fixed inset-0 z-50 flex items-center justify-center p-4">
-			<div class="shadow-card rounded-cards border-steel-border/40 bg-deep-surface w-full max-w-md border p-6">
+			<div class="shadow-card rounded-cards border-steel-border bg-indigo-surface w-full max-w-md border p-6">
 				<div class="mb-4 flex items-center justify-between">
 					<h2 class="font-display text-paper-white text-lg font-semibold">
 						Agregar enlace
@@ -27,7 +27,7 @@ export default function AddLinkModal({ categories, onClose, onSubmit }: Props) {
 					<button
 						type="button"
 						onClick={onClose}
-						class="text-mist hover:bg-indigo-surface hover:text-paper-white rounded-full p-1"
+						class="text-mist hover:bg-cobalt-surface hover:text-paper-white rounded-full p-1"
 						aria-label="Cerrar"
 					>
 						✕
@@ -44,7 +44,7 @@ export default function AddLinkModal({ categories, onClose, onSubmit }: Props) {
 							onInput={(event) =>
 								setUrl((event.target as HTMLInputElement).value)
 							}
-							class="rounded-buttons border-steel-border bg-indigo-surface text-paper-white placeholder:text-mist focus:border-signal-blue border px-3 py-2 text-sm outline-none"
+							class="rounded-buttons border-steel-border bg-midnight-canvas text-paper-white placeholder:text-mist focus:border-signal-blue border px-3 py-2 text-sm outline-none"
 						/>
 					</label>
 					<p class="text-mist -mt-2 text-xs font-thin">
@@ -58,7 +58,7 @@ export default function AddLinkModal({ categories, onClose, onSubmit }: Props) {
 							onChange={(event) =>
 								setCategoryId((event.target as HTMLSelectElement).value)
 							}
-							class="rounded-buttons border-steel-border bg-indigo-surface text-paper-white focus:border-signal-blue border px-3 py-2 text-sm outline-none"
+							class="rounded-buttons border-steel-border bg-midnight-canvas text-paper-white focus:border-signal-blue border px-3 py-2 text-sm outline-none"
 						>
 							{categories.map((category) => (
 								<option key={category.id} value={category.id}>

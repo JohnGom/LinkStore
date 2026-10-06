@@ -57,7 +57,7 @@ function SidebarItem({
 			class={`rounded-buttons flex items-center justify-between px-3 py-2 text-left text-sm font-thin transition ${
 				active
 					? 'bg-signal-blue text-paper-white'
-					: 'text-fog hover:bg-indigo-surface'
+					: 'text-fog hover:bg-cobalt-surface'
 			}`}
 		>
 			<span class="flex items-center gap-2">

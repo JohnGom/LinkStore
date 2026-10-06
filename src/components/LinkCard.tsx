@@ -17,7 +17,7 @@ export default function LinkCard({ link, category }: Props) {
 			href={link.url}
 			target="_blank"
 			rel="noreferrer noopener"
-			class="shadow-card hover:shadow-card-hover group rounded-cards border-steel-border/40 bg-deep-surface flex flex-col gap-4 border p-6 transition hover:-translate-y-0.5"
+			class="shadow-card hover:shadow-card-hover group rounded-cards border-steel-border hover:border-paper-white/20 bg-indigo-surface flex flex-col gap-4 border p-6 transition hover:-translate-y-0.5"
 		>
 			<div class="flex items-center gap-3">
 				<div class="rounded-images bg-paper-white flex h-10 w-10 shrink-0 items-center justify-center">
