@@ -54,8 +54,10 @@ function SidebarItem({
 		<button
 			type="button"
 			onClick={onClick}
-			class={`flex items-center justify-between rounded-lg px-3 py-2 text-left text-sm font-medium transition ${
-				active ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'
+			class={`rounded-buttons flex items-center justify-between px-3 py-2 text-left text-sm font-thin transition ${
+				active
+					? 'bg-signal-blue text-paper-white'
+					: 'text-fog hover:bg-indigo-surface'
 			}`}
 		>
 			<span class="flex items-center gap-2">
@@ -67,7 +69,7 @@ function SidebarItem({
 				)}
 				{label}
 			</span>
-			<span class={active ? 'text-slate-300' : 'text-slate-400'}>{count}</span>
+			<span class={active ? 'text-paper-white/70' : 'text-mist'}>{count}</span>
 		</button>
 	);
 }

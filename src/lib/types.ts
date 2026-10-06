@@ -10,7 +10,6 @@ export interface LinkItem {
 	title: string;
 	description: string;
 	domain: string;
-	imageUrl: string;
 	faviconUrl: string;
 	categoryId: string;
 }
