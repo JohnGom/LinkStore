@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-linksstore}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-linksstore}
+      POSTGRES_DB: ${POSTGRES_DB:-linksstore}
+    ports:
+      - '${POSTGRES_PORT:-5433}:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:

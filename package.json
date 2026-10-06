@@ -12,12 +12,21 @@
 		"astro": "astro",
 		"lint": "eslint .",
 		"format": "prettier --write .",
-		"format:check": "prettier --check ."
+		"format:check": "prettier --check .",
+		"db:up": "docker compose up -d db",
+		"db:down": "docker compose down",
+		"db:generate": "drizzle-kit generate",
+		"db:migrate": "drizzle-kit migrate",
+		"db:studio": "drizzle-kit studio",
+		"db:seed": "tsx src/db/seed.ts"
 	},
 	"dependencies": {
 		"@astrojs/preact": "^6.0.5",
+		"@node-rs/argon2": "^2.2.2",
 		"@tailwindcss/vite": "^4.3.3",
 		"astro": "^7.3.5",
+		"drizzle-orm": "^0.45.3",
+		"postgres": "^3.4.9",
 		"preact": "^10.29.8",
 		"tailwindcss": "^4.3.3"
 	},
@@ -26,11 +35,15 @@
 	},
 	"devDependencies": {
 		"@astrojs/check": "^0.9.10",
+		"@types/node": "^26.6.4",
+		"dotenv": "^18.0.6",
+		"drizzle-kit": "^0.31.11",
 		"eslint": "^10.11.0",
 		"eslint-plugin-astro": "^3.2.1",
 		"prettier": "^3.9.9",
 		"prettier-plugin-astro": "^1.1.0",
 		"prettier-plugin-tailwindcss": "^0.8.1",
+		"tsx": "^4.23.15",
 		"typescript": "^6.0.3",
 		"typescript-eslint": "^8.71.0"
 	}
