@@ -32,7 +32,8 @@ async function seed() {
 	await db.insert(links).values(
 		mockLinks.map((link) => ({
 			userId: user.id,
-			categoryId: categoryIdByMockId.get(link.categoryId) ?? null,
+			categoryId:
+				(link.categoryId && categoryIdByMockId.get(link.categoryId)) || null,
 			url: link.url,
 			title: link.title,
 			description: link.description,

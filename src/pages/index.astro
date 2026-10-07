@@ -1,15 +1,29 @@
 ---
+import { eq } from 'drizzle-orm';
 import Dashboard from '../components/Dashboard';
 import Header from '../components/Header.astro';
+import { db } from '../db/client';
+import { categories, links } from '../db/schema';
 import Layout from '../layouts/Layout.astro';
-import { mockCategories, mockLinks } from '../lib/mockData';
+import { mapCategory, mapLink } from '../lib/mappers';
+import { getCurrentUserId } from '../lib/currentUser';
+
+const userId = await getCurrentUserId();
+
+const [categoryRows, linkRows] = await Promise.all([
+	db.select().from(categories).where(eq(categories.userId, userId)),
+	db.select().from(links).where(eq(links.userId, userId)),
+]);
+
+const initialCategories = categoryRows.map(mapCategory);
+const initialLinks = linkRows.map(mapLink);
 ---
 
 <Layout title="LinksStore">
 	<Header />
 	<Dashboard
 		client:load
-		initialCategories={mockCategories}
-		initialLinks={mockLinks}
+		initialCategories={initialCategories}
+		initialLinks={initialLinks}
 	/>
 </Layout>

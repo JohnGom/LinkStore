@@ -4,17 +4,29 @@ import type { Category } from '../lib/types';
 interface Props {
 	categories: Category[];
 	onClose: () => void;
-	onSubmit: (data: { url: string; categoryId: string }) => void;
+	onSubmit: (data: { url: string; categoryId: string }) => Promise<void>;
 }
 
 export default function AddLinkModal({ categories, onClose, onSubmit }: Props) {
 	const [url, setUrl] = useState('');
 	const [categoryId, setCategoryId] = useState(categories[0]?.id ?? '');
+	const [isSubmitting, setSubmitting] = useState(false);
+	const [error, setError] = useState<string | null>(null);
 
-	function handleSubmit(event: Event) {
+	async function handleSubmit(event: Event) {
 		event.preventDefault();
-		if (!url.trim()) return;
-		onSubmit({ url: url.trim(), categoryId });
+		if (!url.trim() || isSubmitting) return;
+
+		setSubmitting(true);
+		setError(null);
+		try {
+			await onSubmit({ url: url.trim(), categoryId });
+		} catch (err) {
+			setError(
+				err instanceof Error ? err.message : 'No se pudo guardar el enlace.',
+			);
+			setSubmitting(false);
+		}
 	}
 
 	return (
@@ -39,26 +51,28 @@ export default function AddLinkModal({ categories, onClose, onSubmit }: Props) {
 						<input
 							type="url"
 							required
+							disabled={isSubmitting}
 							placeholder="https://ejemplo.com"
 							value={url}
 							onInput={(event) =>
 								setUrl((event.target as HTMLInputElement).value)
 							}
-							class="rounded-buttons border-steel-border bg-midnight-canvas text-paper-white placeholder:text-mist focus:border-signal-blue border px-3 py-2 text-sm outline-none"
+							class="rounded-buttons border-steel-border bg-midnight-canvas text-paper-white placeholder:text-mist focus:border-signal-blue border px-3 py-2 text-sm outline-none disabled:opacity-60"
 						/>
 					</label>
 					<p class="text-mist -mt-2 text-xs font-thin">
-						El título y el favicon se completarán automáticamente a partir de la
-						URL en la próxima iteración.
+						El título, la descripción y el favicon se completan automáticamente
+						a partir de la URL.
 					</p>
 					<label class="text-fog flex flex-col gap-1 text-sm font-thin">
 						Categoría
 						<select
 							value={categoryId}
+							disabled={isSubmitting}
 							onChange={(event) =>
 								setCategoryId((event.target as HTMLSelectElement).value)
 							}
-							class="rounded-buttons border-steel-border bg-midnight-canvas text-paper-white focus:border-signal-blue border px-3 py-2 text-sm outline-none"
+							class="rounded-buttons border-steel-border bg-midnight-canvas text-paper-white focus:border-signal-blue border px-3 py-2 text-sm outline-none disabled:opacity-60"
 						>
 							{categories.map((category) => (
 								<option key={category.id} value={category.id}>
@@ -67,19 +81,22 @@ export default function AddLinkModal({ categories, onClose, onSubmit }: Props) {
 							))}
 						</select>
 					</label>
+					{error && <p class="text-tag-coral text-sm font-thin">{error}</p>}
 					<div class="mt-2 flex justify-end gap-2">
 						<button
 							type="button"
 							onClick={onClose}
-							class="rounded-buttons border-paper-white/20 text-paper-white hover:bg-indigo-surface border px-4 py-2 text-sm font-thin"
+							disabled={isSubmitting}
+							class="rounded-buttons border-paper-white/20 text-paper-white hover:bg-indigo-surface border px-4 py-2 text-sm font-thin disabled:opacity-60"
 						>
 							Cancelar
 						</button>
 						<button
 							type="submit"
-							class="rounded-buttons bg-signal-blue text-paper-white hover:bg-signal-blue/90 px-4 py-2 text-sm font-thin"
+							disabled={isSubmitting}
+							class="rounded-buttons bg-signal-blue text-paper-white hover:bg-signal-blue/90 px-4 py-2 text-sm font-thin disabled:opacity-60"
 						>
-							Guardar
+							{isSubmitting ? 'Guardando…' : 'Guardar'}
 						</button>
 					</div>
 				</form>

@@ -2,7 +2,6 @@ import { useMemo, useState } from 'preact/hooks';
 import AddLinkModal from './AddLinkModal';
 import CategorySidebar from './CategorySidebar';
 import LinkCard from './LinkCard';
-import { favicon } from '../lib/mockData';
 import type { Category, LinkItem } from '../lib/types';
 
 interface Props {
@@ -27,6 +26,7 @@ export default function Dashboard({ initialCategories, initialLinks }: Props) {
 	const counts = useMemo(() => {
 		const result: Record<string, number> = {};
 		for (const link of links) {
+			if (!link.categoryId) continue;
 			result[link.categoryId] = (result[link.categoryId] ?? 0) + 1;
 		}
 		return result;
@@ -40,30 +40,26 @@ export default function Dashboard({ initialCategories, initialLinks }: Props) {
 		[links, selectedCategoryId],
 	);
 
-	function handleAddLink({
+	async function handleAddLink({
 		url,
 		categoryId,
 	}: {
 		url: string;
 		categoryId: string;
 	}) {
-		let domain = url;
-		try {
-			domain = new URL(url).hostname.replace(/^www\./, '');
-		} catch {
-			// URL sin protocolo explícito: se guarda el texto tal cual mientras no haya validación real.
+		const response = await fetch('/api/links', {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({ url, categoryId: categoryId || undefined }),
+		});
+
+		const data = await response.json();
+
+		if (!response.ok) {
+			throw new Error(data.error ?? 'No se pudo guardar el enlace.');
 		}
-		const id = crypto.randomUUID();
-		const newLink: LinkItem = {
-			id,
-			url,
-			title: domain,
-			description: 'Sin descripción todavía.',
-			domain,
-			faviconUrl: favicon(domain),
-			categoryId,
-		};
-		setLinks((current) => [newLink, ...current]);
+
+		setLinks((current) => [data as LinkItem, ...current]);
 		setModalOpen(false);
 	}
 
@@ -145,7 +141,11 @@ export default function Dashboard({ initialCategories, initialLinks }: Props) {
 							<LinkCard
 								key={link.id}
 								link={link}
-								category={categoryById.get(link.categoryId)}
+								category={
+									link.categoryId
+										? categoryById.get(link.categoryId)
+										: undefined
+								}
 							/>
 						))}
 					</div>
