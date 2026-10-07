@@ -21,6 +21,7 @@
 		"db:seed": "tsx src/db/seed.ts"
 	},
 	"dependencies": {
+		"@astrojs/node": "^11.1.7",
 		"@astrojs/preact": "^6.0.5",
 		"@node-rs/argon2": "^2.2.2",
 		"@tailwindcss/vite": "^4.3.3",
