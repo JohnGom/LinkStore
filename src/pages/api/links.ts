@@ -18,8 +18,6 @@ export const GET: APIRoute = async () => {
 };
 
 export const POST: APIRoute = async ({ request }) => {
-	const userId = await getCurrentUserId();
-
 	let body: unknown;
 	try {
 		body = await request.json();
@@ -43,32 +41,44 @@ export const POST: APIRoute = async ({ request }) => {
 		return json({ error: 'La URL no es válida.' }, 400);
 	}
 
-	let resolvedCategoryId: string | null = null;
-	if (typeof categoryId === 'string' && categoryId) {
-		const [category] = await db
-			.select({ id: categories.id })
-			.from(categories)
-			.where(and(eq(categories.id, categoryId), eq(categories.userId, userId)))
-			.limit(1);
-		if (!category) {
-			return json({ error: 'La categoría no existe.' }, 400);
+	try {
+		const userId = await getCurrentUserId();
+
+		let resolvedCategoryId: string | null = null;
+		if (typeof categoryId === 'string' && categoryId) {
+			const [category] = await db
+				.select({ id: categories.id })
+				.from(categories)
+				.where(
+					and(eq(categories.id, categoryId), eq(categories.userId, userId)),
+				)
+				.limit(1);
+			if (!category) {
+				return json({ error: 'La categoría no existe.' }, 400);
+			}
+			resolvedCategoryId = category.id;
 		}
-		resolvedCategoryId = category.id;
+
+		const metadata = await fetchLinkMetadata(normalizedUrl);
+
+		const [created] = await db
+			.insert(links)
+			.values({
+				userId,
+				categoryId: resolvedCategoryId,
+				url: normalizedUrl,
+				title: metadata.title,
+				description: metadata.description,
+				faviconUrl: metadata.faviconUrl,
+			})
+			.returning();
+
+		return json(mapLink(created), 201);
+	} catch (error) {
+		console.error('POST /api/links falló:', error);
+		return json(
+			{ error: 'No se pudo guardar el enlace. Intenta de nuevo.' },
+			500,
+		);
 	}
-
-	const metadata = await fetchLinkMetadata(normalizedUrl);
-
-	const [created] = await db
-		.insert(links)
-		.values({
-			userId,
-			categoryId: resolvedCategoryId,
-			url: normalizedUrl,
-			title: metadata.title,
-			description: metadata.description,
-			faviconUrl: metadata.faviconUrl,
-		})
-		.returning();
-
-	return json(mapLink(created), 201);
 };
