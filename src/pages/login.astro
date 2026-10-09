@@ -1,0 +1,94 @@
+---
+import { eq } from 'drizzle-orm';
+import { db } from '../db/client';
+import { users } from '../db/schema';
+import Layout from '../layouts/Layout.astro';
+import { verifyPassword } from '../lib/password';
+import { createSession, setSessionCookie } from '../lib/session';
+
+if (Astro.locals.user) {
+	return Astro.redirect('/');
+}
+
+let error: string | null = null;
+let email = '';
+
+if (Astro.request.method === 'POST') {
+	const formData = await Astro.request.formData();
+	email = String(formData.get('email') ?? '')
+		.trim()
+		.toLowerCase();
+	const password = String(formData.get('password') ?? '');
+
+	if (!email || !password) {
+		error = 'Completa tu correo y contraseña.';
+	} else {
+		const [user] = await db
+			.select()
+			.from(users)
+			.where(eq(users.email, email))
+			.limit(1);
+		const isValid = user
+			? await verifyPassword(user.passwordHash, password)
+			: false;
+
+		if (!user || !isValid) {
+			error = 'Correo o contraseña incorrectos.';
+		} else {
+			const session = await createSession(user.id);
+			setSessionCookie(Astro.cookies, session);
+			return Astro.redirect('/');
+		}
+	}
+}
+---
+
+<Layout title="Iniciar sesión · LinksStore">
+	<main class="flex min-h-screen items-center justify-center p-4">
+		<form
+			method="POST"
+			class="shadow-card rounded-cards border-steel-border bg-indigo-surface w-full max-w-sm border p-6"
+		>
+			<h1 class="font-display text-paper-white mb-4 text-lg font-semibold">
+				Iniciar sesión
+			</h1>
+
+			{error && <p class="text-tag-coral mb-4 text-sm font-thin">{error}</p>}
+
+			<label class="text-fog mb-3 flex flex-col gap-1 text-sm font-thin">
+				Correo
+				<input
+					type="email"
+					name="email"
+					required
+					value={email}
+					class="rounded-buttons border-steel-border bg-midnight-canvas text-paper-white focus:border-signal-blue border px-3 py-2 text-sm outline-none"
+				/>
+			</label>
+
+			<label class="text-fog mb-4 flex flex-col gap-1 text-sm font-thin">
+				Contraseña
+				<input
+					type="password"
+					name="password"
+					required
+					class="rounded-buttons border-steel-border bg-midnight-canvas text-paper-white focus:border-signal-blue border px-3 py-2 text-sm outline-none"
+				/>
+			</label>
+
+			<button
+				type="submit"
+				class="rounded-buttons bg-signal-blue text-paper-white hover:bg-signal-blue/90 w-full px-4 py-2 text-sm font-thin"
+			>
+				Entrar
+			</button>
+
+			<p class="text-mist mt-4 text-sm font-thin">
+				¿No tienes cuenta?{' '}
+				<a href="/register" class="text-signal-blue">
+					Crea una
+				</a>
+			</p>
+		</form>
+	</main>
+</Layout>

@@ -1,0 +1,17 @@
+---
+import {
+	clearSessionCookie,
+	getSessionIdFromCookies,
+	invalidateSession,
+} from '../lib/session';
+
+if (Astro.request.method === 'POST') {
+	const sessionId = getSessionIdFromCookies(Astro.cookies);
+	if (sessionId) {
+		await invalidateSession(sessionId);
+	}
+	clearSessionCookie(Astro.cookies);
+}
+
+return Astro.redirect('/login');
+---

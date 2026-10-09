@@ -3,14 +3,16 @@ import { eq } from 'drizzle-orm';
 import { db } from '../../db/client';
 import { categories } from '../../db/schema';
 import { json } from '../../lib/apiResponse';
-import { getCurrentUserId } from '../../lib/currentUser';
 import { mapCategory } from '../../lib/mappers';
 
-export const GET: APIRoute = async () => {
-	const userId = await getCurrentUserId();
+export const GET: APIRoute = async ({ locals }) => {
+	if (!locals.user) {
+		return json({ error: 'No autenticado.' }, 401);
+	}
+
 	const rows = await db
 		.select()
 		.from(categories)
-		.where(eq(categories.userId, userId));
+		.where(eq(categories.userId, locals.user.id));
 	return json(rows.map(mapCategory));
 };

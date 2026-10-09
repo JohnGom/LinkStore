@@ -1,3 +1,11 @@
+---
+interface Props {
+	userEmail?: string;
+}
+
+const { userEmail } = Astro.props;
+---
+
 <header class="border-b border-steel-border/60">
 	<div class="mx-auto flex max-w-6xl items-center gap-2 px-4 py-4 lg:px-8">
 		<span class="flex h-8 w-8 items-center justify-center rounded-images bg-paper-white text-base">
@@ -6,5 +14,21 @@
 		<span class="font-display text-lg font-semibold text-paper-white">
 			LinksStore
 		</span>
+
+		{userEmail && (
+			<div class="ml-auto flex items-center gap-3">
+				<span class="text-mist hidden text-sm font-thin sm:inline">
+					{userEmail}
+				</span>
+				<form method="POST" action="/logout">
+					<button
+						type="submit"
+						class="rounded-buttons border-paper-white/20 text-paper-white hover:bg-indigo-surface border px-3 py-1.5 text-sm font-thin"
+					>
+						Cerrar sesión
+					</button>
+				</form>
+			</div>
+		)}
 	</div>
 </header>

@@ -3,21 +3,28 @@ import { and, desc, eq } from 'drizzle-orm';
 import { db } from '../../db/client';
 import { categories, links } from '../../db/schema';
 import { json } from '../../lib/apiResponse';
-import { getCurrentUserId } from '../../lib/currentUser';
 import { fetchLinkMetadata } from '../../lib/metadata';
 import { mapLink } from '../../lib/mappers';
 
-export const GET: APIRoute = async () => {
-	const userId = await getCurrentUserId();
+export const GET: APIRoute = async ({ locals }) => {
+	if (!locals.user) {
+		return json({ error: 'No autenticado.' }, 401);
+	}
+
 	const rows = await db
 		.select()
 		.from(links)
-		.where(eq(links.userId, userId))
+		.where(eq(links.userId, locals.user.id))
 		.orderBy(desc(links.createdAt));
 	return json(rows.map(mapLink));
 };
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
+	if (!locals.user) {
+		return json({ error: 'No autenticado.' }, 401);
+	}
+	const userId = locals.user.id;
+
 	let body: unknown;
 	try {
 		body = await request.json();
@@ -42,8 +49,6 @@ export const POST: APIRoute = async ({ request }) => {
 	}
 
 	try {
-		const userId = await getCurrentUserId();
-
 		let resolvedCategoryId: string | null = null;
 		if (typeof categoryId === 'string' && categoryId) {
 			const [category] = await db
