@@ -1,3 +1,5 @@
+import { useState } from 'preact/hooks';
+import CategoryCreateForm from './CategoryCreateForm';
 import type { Category } from '../lib/types';
 
 interface Props {
@@ -6,6 +8,7 @@ interface Props {
 	totalCount: number;
 	selectedId: string | null;
 	onSelect: (id: string | null) => void;
+	onCreateCategory: (name: string) => Promise<Category>;
 }
 
 export default function CategorySidebar({
@@ -14,7 +17,10 @@ export default function CategorySidebar({
 	totalCount,
 	selectedId,
 	onSelect,
+	onCreateCategory,
 }: Props) {
+	const [isCreating, setCreating] = useState(false);
+
 	return (
 		<nav class="flex flex-col gap-1">
 			<SidebarItem
@@ -33,6 +39,27 @@ export default function CategorySidebar({
 					onClick={() => onSelect(category.id)}
 				/>
 			))}
+
+			{isCreating ? (
+				<div class="mt-2 px-1">
+					<CategoryCreateForm
+						onCreate={async (name) => {
+							const created = await onCreateCategory(name);
+							setCreating(false);
+							return created;
+						}}
+						onCancel={() => setCreating(false)}
+					/>
+				</div>
+			) : (
+				<button
+					type="button"
+					onClick={() => setCreating(true)}
+					class="text-signal-blue rounded-buttons hover:bg-cobalt-surface mt-2 px-3 py-2 text-left text-sm font-thin"
+				>
+					+ Nueva categoría
+				</button>
+			)}
 		</nav>
 	);
 }

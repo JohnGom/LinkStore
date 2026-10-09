@@ -10,7 +10,7 @@ interface Props {
 }
 
 export default function Dashboard({ initialCategories, initialLinks }: Props) {
-	const [categories] = useState(initialCategories);
+	const [categories, setCategories] = useState(initialCategories);
 	const [links, setLinks] = useState(initialLinks);
 	const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
 		null,
@@ -63,6 +63,24 @@ export default function Dashboard({ initialCategories, initialLinks }: Props) {
 		setModalOpen(false);
 	}
 
+	async function handleCreateCategory(name: string): Promise<Category> {
+		const response = await fetch('/api/categories', {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({ name }),
+		});
+
+		const data = await response.json();
+
+		if (!response.ok) {
+			throw new Error(data.error ?? 'No se pudo crear la categoría.');
+		}
+
+		const created = data as Category;
+		setCategories((current) => [...current, created]);
+		return created;
+	}
+
 	return (
 		<div class="mx-auto flex max-w-6xl gap-6 px-4 py-6 lg:px-8">
 			<aside
@@ -92,6 +110,7 @@ export default function Dashboard({ initialCategories, initialLinks }: Props) {
 						setSelectedCategoryId(id);
 						setSidebarOpen(false);
 					}}
+					onCreateCategory={handleCreateCategory}
 				/>
 			</aside>
 
@@ -157,6 +176,7 @@ export default function Dashboard({ initialCategories, initialLinks }: Props) {
 					categories={categories}
 					onClose={() => setModalOpen(false)}
 					onSubmit={handleAddLink}
+					onCreateCategory={handleCreateCategory}
 				/>
 			)}
 		</div>

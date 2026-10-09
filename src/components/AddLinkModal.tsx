@@ -1,17 +1,36 @@
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
+import CategoryCreateForm from './CategoryCreateForm';
 import type { Category } from '../lib/types';
 
 interface Props {
 	categories: Category[];
 	onClose: () => void;
 	onSubmit: (data: { url: string; categoryId: string }) => Promise<void>;
+	onCreateCategory: (name: string) => Promise<Category>;
 }
 
-export default function AddLinkModal({ categories, onClose, onSubmit }: Props) {
+export default function AddLinkModal({
+	categories,
+	onClose,
+	onSubmit,
+	onCreateCategory,
+}: Props) {
 	const [url, setUrl] = useState('');
 	const [categoryId, setCategoryId] = useState(categories[0]?.id ?? '');
 	const [isSubmitting, setSubmitting] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [isCreatingCategory, setCreatingCategory] = useState(
+		categories.length === 0,
+	);
+
+	useEffect(() => {
+		if (
+			categories.length > 0 &&
+			!categories.some((category) => category.id === categoryId)
+		) {
+			setCategoryId(categories[0].id);
+		}
+	}, [categories]);
 
 	async function handleSubmit(event: Event) {
 		event.preventDefault();
@@ -27,6 +46,13 @@ export default function AddLinkModal({ categories, onClose, onSubmit }: Props) {
 			);
 			setSubmitting(false);
 		}
+	}
+
+	async function handleCreateCategory(name: string) {
+		const created = await onCreateCategory(name);
+		setCategoryId(created.id);
+		setCreatingCategory(false);
+		return created;
 	}
 
 	return (
@@ -64,23 +90,47 @@ export default function AddLinkModal({ categories, onClose, onSubmit }: Props) {
 						El título, la descripción y el favicon se completan automáticamente
 						a partir de la URL.
 					</p>
-					<label class="text-fog flex flex-col gap-1 text-sm font-thin">
-						Categoría
-						<select
-							value={categoryId}
-							disabled={isSubmitting}
-							onChange={(event) =>
-								setCategoryId((event.target as HTMLSelectElement).value)
-							}
-							class="rounded-buttons border-steel-border bg-midnight-canvas text-paper-white focus:border-signal-blue border px-3 py-2 text-sm outline-none disabled:opacity-60"
-						>
-							{categories.map((category) => (
-								<option key={category.id} value={category.id}>
-									{category.name}
-								</option>
-							))}
-						</select>
-					</label>
+
+					<div class="flex flex-col gap-2">
+						<span class="text-fog text-sm font-thin">Categoría</span>
+
+						{!isCreatingCategory && categories.length > 0 && (
+							<select
+								value={categoryId}
+								disabled={isSubmitting}
+								onChange={(event) =>
+									setCategoryId((event.target as HTMLSelectElement).value)
+								}
+								class="rounded-buttons border-steel-border bg-midnight-canvas text-paper-white focus:border-signal-blue border px-3 py-2 text-sm outline-none disabled:opacity-60"
+							>
+								{categories.map((category) => (
+									<option key={category.id} value={category.id}>
+										{category.name}
+									</option>
+								))}
+							</select>
+						)}
+
+						{isCreatingCategory ? (
+							<CategoryCreateForm
+								onCreate={handleCreateCategory}
+								onCancel={
+									categories.length > 0
+										? () => setCreatingCategory(false)
+										: undefined
+								}
+							/>
+						) : (
+							<button
+								type="button"
+								onClick={() => setCreatingCategory(true)}
+								class="text-signal-blue self-start text-xs font-thin"
+							>
+								+ Nueva categoría
+							</button>
+						)}
+					</div>
+
 					{error && <p class="text-tag-coral text-sm font-thin">{error}</p>}
 					<div class="mt-2 flex justify-end gap-2">
 						<button
