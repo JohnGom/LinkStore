@@ -11,5 +11,6 @@ export interface LinkItem {
 	description: string;
 	domain: string;
 	faviconUrl: string;
-	categoryId: string | null;
+	personalNote: string;
+	categoryIds: string[];
 }

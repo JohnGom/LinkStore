@@ -15,6 +15,22 @@ const { title = 'LinksStore' } = Astro.props;
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+		<script is:inline>
+			(function () {
+				try {
+					const stored = localStorage.getItem('theme');
+					const theme =
+						stored === 'light' || stored === 'dark'
+							? stored
+							: window.matchMedia('(prefers-color-scheme: light)').matches
+								? 'light'
+								: 'dark';
+					document.documentElement.dataset.theme = theme;
+				} catch {
+					// localStorage puede no estar disponible (modo privado); se queda con el tema oscuro por defecto.
+				}
+			})();
+		</script>
 	</head>
 	<body class="min-h-screen bg-midnight-canvas font-body font-thin text-paper-white">
 		<slot />

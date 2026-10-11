@@ -1,8 +1,11 @@
 import type { APIRoute } from 'astro';
-import { and, desc, eq } from 'drizzle-orm';
 import { db } from '../../db/client';
-import { categories, links } from '../../db/schema';
+import { linkCategories, links } from '../../db/schema';
 import { json } from '../../lib/apiResponse';
+import {
+	getLinksForUser,
+	resolveOwnedCategoryIds,
+} from '../../lib/linkQueries';
 import { fetchLinkMetadata } from '../../lib/metadata';
 import { mapLink } from '../../lib/mappers';
 
@@ -11,12 +14,7 @@ export const GET: APIRoute = async ({ locals }) => {
 		return json({ error: 'No autenticado.' }, 401);
 	}
 
-	const rows = await db
-		.select()
-		.from(links)
-		.where(eq(links.userId, locals.user.id))
-		.orderBy(desc(links.createdAt));
-	return json(rows.map(mapLink));
+	return json(await getLinksForUser(locals.user.id));
 };
 
 export const POST: APIRoute = async ({ request, locals }) => {
@@ -32,9 +30,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
 		return json({ error: 'JSON inválido.' }, 400);
 	}
 
-	const { url, categoryId } = (body ?? {}) as {
+	const { url, categoryIds } = (body ?? {}) as {
 		url?: unknown;
-		categoryId?: unknown;
+		categoryIds?: unknown;
 	};
 
 	if (typeof url !== 'string' || !url.trim()) {
@@ -48,37 +46,44 @@ export const POST: APIRoute = async ({ request, locals }) => {
 		return json({ error: 'La URL no es válida.' }, 400);
 	}
 
-	try {
-		let resolvedCategoryId: string | null = null;
-		if (typeof categoryId === 'string' && categoryId) {
-			const [category] = await db
-				.select({ id: categories.id })
-				.from(categories)
-				.where(
-					and(eq(categories.id, categoryId), eq(categories.userId, userId)),
-				)
-				.limit(1);
-			if (!category) {
-				return json({ error: 'La categoría no existe.' }, 400);
-			}
-			resolvedCategoryId = category.id;
-		}
+	const requestedCategoryIds = Array.isArray(categoryIds)
+		? categoryIds.filter(
+				(id): id is string => typeof id === 'string' && id.length > 0,
+			)
+		: [];
 
+	try {
+		const resolvedCategoryIds = await resolveOwnedCategoryIds(
+			userId,
+			requestedCategoryIds,
+		);
 		const metadata = await fetchLinkMetadata(normalizedUrl);
 
-		const [created] = await db
-			.insert(links)
-			.values({
-				userId,
-				categoryId: resolvedCategoryId,
-				url: normalizedUrl,
-				title: metadata.title,
-				description: metadata.description,
-				faviconUrl: metadata.faviconUrl,
-			})
-			.returning();
+		const created = await db.transaction(async (tx) => {
+			const [link] = await tx
+				.insert(links)
+				.values({
+					userId,
+					url: normalizedUrl,
+					title: metadata.title,
+					description: metadata.description,
+					faviconUrl: metadata.faviconUrl,
+				})
+				.returning();
 
-		return json(mapLink(created), 201);
+			if (resolvedCategoryIds.length > 0) {
+				await tx.insert(linkCategories).values(
+					resolvedCategoryIds.map((categoryId) => ({
+						linkId: link.id,
+						categoryId,
+					})),
+				);
+			}
+
+			return link;
+		});
+
+		return json(mapLink(created, resolvedCategoryIds), 201);
 	} catch (error) {
 		console.error('POST /api/links falló:', error);
 		return json(

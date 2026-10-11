@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useState } from 'preact/hooks';
+import CategoryChipPicker from './CategoryChipPicker';
 import CategoryCreateForm from './CategoryCreateForm';
 import type { Category } from '../lib/types';
 
 interface Props {
 	categories: Category[];
 	onClose: () => void;
-	onSubmit: (data: { url: string; categoryId: string }) => Promise<void>;
+	onSubmit: (data: { url: string; categoryIds: string[] }) => Promise<void>;
 	onCreateCategory: (name: string) => Promise<Category>;
 }
 
@@ -16,21 +17,20 @@ export default function AddLinkModal({
 	onCreateCategory,
 }: Props) {
 	const [url, setUrl] = useState('');
-	const [categoryId, setCategoryId] = useState(categories[0]?.id ?? '');
+	const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
 	const [isSubmitting, setSubmitting] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [isCreatingCategory, setCreatingCategory] = useState(
 		categories.length === 0,
 	);
 
-	useEffect(() => {
-		if (
-			categories.length > 0 &&
-			!categories.some((category) => category.id === categoryId)
-		) {
-			setCategoryId(categories[0].id);
-		}
-	}, [categories]);
+	function toggleCategory(categoryId: string) {
+		setSelectedCategoryIds((current) =>
+			current.includes(categoryId)
+				? current.filter((id) => id !== categoryId)
+				: [...current, categoryId],
+		);
+	}
 
 	async function handleSubmit(event: Event) {
 		event.preventDefault();
@@ -39,7 +39,7 @@ export default function AddLinkModal({
 		setSubmitting(true);
 		setError(null);
 		try {
-			await onSubmit({ url: url.trim(), categoryId });
+			await onSubmit({ url: url.trim(), categoryIds: selectedCategoryIds });
 		} catch (err) {
 			setError(
 				err instanceof Error ? err.message : 'No se pudo guardar el enlace.',
@@ -50,13 +50,13 @@ export default function AddLinkModal({
 
 	async function handleCreateCategory(name: string) {
 		const created = await onCreateCategory(name);
-		setCategoryId(created.id);
+		setSelectedCategoryIds((current) => [...current, created.id]);
 		setCreatingCategory(false);
 		return created;
 	}
 
 	return (
-		<div class="bg-midnight-canvas/70 fixed inset-0 z-50 flex items-center justify-center p-4">
+		<div class="bg-scrim/70 fixed inset-0 z-50 flex items-center justify-center p-4">
 			<div class="shadow-card rounded-cards border-steel-border bg-indigo-surface w-full max-w-md border p-6">
 				<div class="mb-4 flex items-center justify-between">
 					<h2 class="font-display text-paper-white text-lg font-semibold">
@@ -92,23 +92,17 @@ export default function AddLinkModal({
 					</p>
 
 					<div class="flex flex-col gap-2">
-						<span class="text-fog text-sm font-thin">Categoría</span>
+						<span class="text-fog text-sm font-thin">
+							Categorías (opcional, puedes elegir varias)
+						</span>
 
-						{!isCreatingCategory && categories.length > 0 && (
-							<select
-								value={categoryId}
+						{!isCreatingCategory && (
+							<CategoryChipPicker
+								categories={categories}
+								selectedIds={selectedCategoryIds}
+								onToggle={toggleCategory}
 								disabled={isSubmitting}
-								onChange={(event) =>
-									setCategoryId((event.target as HTMLSelectElement).value)
-								}
-								class="rounded-buttons border-steel-border bg-midnight-canvas text-paper-white focus:border-signal-blue border px-3 py-2 text-sm outline-none disabled:opacity-60"
-							>
-								{categories.map((category) => (
-									<option key={category.id} value={category.id}>
-										{category.name}
-									</option>
-								))}
-							</select>
+							/>
 						)}
 
 						{isCreatingCategory ? (

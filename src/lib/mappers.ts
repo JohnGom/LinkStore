@@ -6,7 +6,10 @@ export function mapCategory(row: typeof categories.$inferSelect): Category {
 	return { id: row.id, name: row.name, color: row.color };
 }
 
-export function mapLink(row: typeof links.$inferSelect): LinkItem {
+export function mapLink(
+	row: typeof links.$inferSelect,
+	categoryIds: string[] = [],
+): LinkItem {
 	return {
 		id: row.id,
 		url: row.url,
@@ -14,6 +17,7 @@ export function mapLink(row: typeof links.$inferSelect): LinkItem {
 		description: row.description ?? '',
 		domain: getDomain(row.url),
 		faviconUrl: row.faviconUrl ?? '',
-		categoryId: row.categoryId,
+		personalNote: row.personalNote ?? '',
+		categoryIds,
 	};
 }

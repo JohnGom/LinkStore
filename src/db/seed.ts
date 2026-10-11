@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { hash } from '@node-rs/argon2';
 import { db } from './client';
-import { categories, links, users } from './schema';
+import { categories, linkCategories, links, users } from './schema';
 import { mockCategories, mockLinks } from '../lib/mockData';
 
 async function seed() {
@@ -29,17 +29,28 @@ async function seed() {
 		]),
 	);
 
-	await db.insert(links).values(
-		mockLinks.map((link) => ({
-			userId: user.id,
-			categoryId:
-				(link.categoryId && categoryIdByMockId.get(link.categoryId)) || null,
-			url: link.url,
-			title: link.title,
-			description: link.description,
-			faviconUrl: link.faviconUrl,
-		})),
-	);
+	const insertedLinks = await db
+		.insert(links)
+		.values(
+			mockLinks.map((link) => ({
+				userId: user.id,
+				url: link.url,
+				title: link.title,
+				description: link.description,
+				faviconUrl: link.faviconUrl,
+			})),
+		)
+		.returning();
+
+	const linkCategoryRows = mockLinks.flatMap((link, index) => {
+		const categoryId =
+			link.categoryId && categoryIdByMockId.get(link.categoryId);
+		return categoryId ? [{ linkId: insertedLinks[index].id, categoryId }] : [];
+	});
+
+	if (linkCategoryRows.length > 0) {
+		await db.insert(linkCategories).values(linkCategoryRows);
+	}
 
 	console.log(
 		`Seed listo: usuario ${user.email} con ${mockLinks.length} enlaces.`,

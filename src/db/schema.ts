@@ -1,4 +1,10 @@
-import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import {
+	pgTable,
+	primaryKey,
+	text,
+	timestamp,
+	uuid,
+} from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
 	id: uuid('id').primaryKey().defaultRandom(),
@@ -34,14 +40,25 @@ export const links = pgTable('links', {
 	userId: uuid('user_id')
 		.notNull()
 		.references(() => users.id, { onDelete: 'cascade' }),
-	categoryId: uuid('category_id').references(() => categories.id, {
-		onDelete: 'set null',
-	}),
 	url: text('url').notNull(),
 	title: text('title').notNull(),
 	description: text('description'),
 	faviconUrl: text('favicon_url'),
+	personalNote: text('personal_note'),
 	createdAt: timestamp('created_at', { withTimezone: true })
 		.notNull()
 		.defaultNow(),
 });
+
+export const linkCategories = pgTable(
+	'link_categories',
+	{
+		linkId: uuid('link_id')
+			.notNull()
+			.references(() => links.id, { onDelete: 'cascade' }),
+		categoryId: uuid('category_id')
+			.notNull()
+			.references(() => categories.id, { onDelete: 'cascade' }),
+	},
+	(table) => [primaryKey({ columns: [table.linkId, table.categoryId] })],
+);

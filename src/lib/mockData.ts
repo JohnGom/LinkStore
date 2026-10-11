@@ -1,4 +1,14 @@
-import type { Category, LinkItem } from './types';
+import type { Category } from './types';
+
+interface MockLink {
+	id: string;
+	url: string;
+	title: string;
+	description: string;
+	domain: string;
+	faviconUrl: string;
+	categoryId: string;
+}
 
 export const mockCategories: Category[] = [
 	{ id: 'dev', name: 'Desarrollo', color: '#00acfe' },
@@ -12,7 +22,7 @@ export function favicon(domain: string) {
 	return `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
 }
 
-export const mockLinks: LinkItem[] = [
+export const mockLinks: MockLink[] = [
 	{
 		id: '1',
 		url: 'https://excalidraw.com',

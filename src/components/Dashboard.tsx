@@ -2,6 +2,7 @@ import { useMemo, useState } from 'preact/hooks';
 import AddLinkModal from './AddLinkModal';
 import CategorySidebar from './CategorySidebar';
 import LinkCard from './LinkCard';
+import LinkDetailModal from './LinkDetailModal';
 import type { Category, LinkItem } from '../lib/types';
 
 interface Props {
@@ -15,8 +16,10 @@ export default function Dashboard({ initialCategories, initialLinks }: Props) {
 	const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
 		null,
 	);
+	const [searchQuery, setSearchQuery] = useState('');
 	const [isModalOpen, setModalOpen] = useState(false);
 	const [isSidebarOpen, setSidebarOpen] = useState(false);
+	const [viewingLink, setViewingLink] = useState<LinkItem | null>(null);
 
 	const categoryById = useMemo(
 		() => new Map(categories.map((category) => [category.id, category])),
@@ -26,31 +29,44 @@ export default function Dashboard({ initialCategories, initialLinks }: Props) {
 	const counts = useMemo(() => {
 		const result: Record<string, number> = {};
 		for (const link of links) {
-			if (!link.categoryId) continue;
-			result[link.categoryId] = (result[link.categoryId] ?? 0) + 1;
+			for (const categoryId of link.categoryIds) {
+				result[categoryId] = (result[categoryId] ?? 0) + 1;
+			}
 		}
 		return result;
 	}, [links]);
 
-	const visibleLinks = useMemo(
-		() =>
-			selectedCategoryId
-				? links.filter((link) => link.categoryId === selectedCategoryId)
-				: links,
-		[links, selectedCategoryId],
-	);
+	const visibleLinks = useMemo(() => {
+		const query = searchQuery.trim().toLowerCase();
+		return links.filter((link) => {
+			if (
+				selectedCategoryId &&
+				!link.categoryIds.includes(selectedCategoryId)
+			) {
+				return false;
+			}
+			if (
+				query &&
+				!link.title.toLowerCase().includes(query) &&
+				!link.domain.includes(query)
+			) {
+				return false;
+			}
+			return true;
+		});
+	}, [links, selectedCategoryId, searchQuery]);
 
 	async function handleAddLink({
 		url,
-		categoryId,
+		categoryIds,
 	}: {
 		url: string;
-		categoryId: string;
+		categoryIds: string[];
 	}) {
 		const response = await fetch('/api/links', {
 			method: 'POST',
 			headers: { 'content-type': 'application/json' },
-			body: JSON.stringify({ url, categoryId: categoryId || undefined }),
+			body: JSON.stringify({ url, categoryIds }),
 		});
 
 		const data = await response.json();
@@ -79,6 +95,40 @@ export default function Dashboard({ initialCategories, initialLinks }: Props) {
 		const created = data as Category;
 		setCategories((current) => [...current, created]);
 		return created;
+	}
+
+	async function handleUpdateLink(
+		linkId: string,
+		updates: { personalNote: string; categoryIds: string[] },
+	) {
+		const response = await fetch(`/api/links/${linkId}`, {
+			method: 'PATCH',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify(updates),
+		});
+
+		const data = await response.json();
+
+		if (!response.ok) {
+			throw new Error(data.error ?? 'No se pudo actualizar el enlace.');
+		}
+
+		const updated = data as LinkItem;
+		setLinks((current) =>
+			current.map((link) => (link.id === linkId ? updated : link)),
+		);
+	}
+
+	async function handleDeleteLink(linkId: string) {
+		const response = await fetch(`/api/links/${linkId}`, { method: 'DELETE' });
+
+		if (!response.ok) {
+			const data = await response.json();
+			throw new Error(data.error ?? 'No se pudo eliminar el enlace.');
+		}
+
+		setLinks((current) => current.filter((link) => link.id !== linkId));
+		setViewingLink(null);
 	}
 
 	return (
@@ -118,13 +168,13 @@ export default function Dashboard({ initialCategories, initialLinks }: Props) {
 				<button
 					type="button"
 					aria-label="Cerrar menú de categorías"
-					class="bg-midnight-canvas/60 fixed inset-0 z-30 lg:hidden"
+					class="bg-scrim/60 fixed inset-0 z-30 lg:hidden"
 					onClick={() => setSidebarOpen(false)}
 				/>
 			)}
 
 			<div class="flex-1">
-				<div class="mb-4 flex items-center justify-between gap-3">
+				<div class="mb-4 flex flex-wrap items-center gap-3">
 					<button
 						type="button"
 						onClick={() => setSidebarOpen(true)}
@@ -132,25 +182,39 @@ export default function Dashboard({ initialCategories, initialLinks }: Props) {
 					>
 						Categorías
 					</button>
-					<h2 class="font-display text-mist hidden text-sm font-medium lg:block">
-						{selectedCategoryId
-							? categoryById.get(selectedCategoryId)?.name
-							: 'Todos los enlaces'}{' '}
-						· {visibleLinks.length}
-					</h2>
+
+					<input
+						type="search"
+						value={searchQuery}
+						onInput={(event) =>
+							setSearchQuery((event.target as HTMLInputElement).value)
+						}
+						placeholder="Buscar por nombre…"
+						class="rounded-buttons border-steel-border bg-indigo-surface text-paper-white placeholder:text-mist focus:border-signal-blue min-w-0 flex-1 border px-3 py-2 text-sm outline-none"
+					/>
+
 					<button
 						type="button"
 						onClick={() => setModalOpen(true)}
-						class="rounded-buttons bg-signal-blue text-paper-white hover:bg-signal-blue/90 ml-auto px-4 py-2 text-sm font-thin"
+						class="rounded-buttons bg-signal-blue text-paper-white hover:bg-signal-blue/90 px-4 py-2 text-sm font-thin whitespace-nowrap"
 					>
 						+ Agregar enlace
 					</button>
 				</div>
 
+				<h2 class="font-display text-mist mb-4 hidden text-sm font-medium lg:block">
+					{selectedCategoryId
+						? categoryById.get(selectedCategoryId)?.name
+						: 'Todos los enlaces'}{' '}
+					· {visibleLinks.length}
+				</h2>
+
 				{visibleLinks.length === 0 ? (
 					<div class="rounded-cards border-steel-border text-mist flex flex-col items-center gap-2 border border-dashed py-16 text-center">
 						<p class="text-fog font-thin">
-							No hay enlaces en esta categoría todavía.
+							{links.length === 0
+								? 'No hay enlaces en esta categoría todavía.'
+								: 'Ningún enlace coincide con tu búsqueda.'}
 						</p>
 						<p class="text-sm font-thin">Agrega uno con el botón de arriba.</p>
 					</div>
@@ -160,11 +224,12 @@ export default function Dashboard({ initialCategories, initialLinks }: Props) {
 							<LinkCard
 								key={link.id}
 								link={link}
-								category={
-									link.categoryId
-										? categoryById.get(link.categoryId)
-										: undefined
-								}
+								categories={link.categoryIds
+									.map((id) => categoryById.get(id))
+									.filter((category): category is Category =>
+										Boolean(category),
+									)}
+								onView={() => setViewingLink(link)}
 							/>
 						))}
 					</div>
@@ -177,6 +242,16 @@ export default function Dashboard({ initialCategories, initialLinks }: Props) {
 					onClose={() => setModalOpen(false)}
 					onSubmit={handleAddLink}
 					onCreateCategory={handleCreateCategory}
+				/>
+			)}
+
+			{viewingLink && (
+				<LinkDetailModal
+					link={viewingLink}
+					categories={categories}
+					onClose={() => setViewingLink(null)}
+					onUpdate={(updates) => handleUpdateLink(viewingLink.id, updates)}
+					onDelete={() => handleDeleteLink(viewingLink.id)}
 				/>
 			)}
 		</div>

@@ -29,6 +29,9 @@
 	--color-tag-olive: #94ae43;
 	--color-tag-slate: #5c6f8a;
 
+	/* Siempre oscuro, independiente del tema — fondo de modales/overlays. */
+	--color-scrim: #00030a;
+
 	--font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
 	--font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
 
@@ -43,6 +46,34 @@
 	--shadow-card-hover:
 		0 1px 0 0 rgba(255, 255, 255, 0.06) inset,
 		0 12px 28px -10px rgba(0, 0, 0, 0.7);
+}
+
+:root {
+	color-scheme: dark;
+}
+
+/*
+ * Modo claro: redefine los mismos tokens semánticos con valores claros.
+ * Como las utilidades de Tailwind generadas desde @theme referencian
+ * var(--color-*) en vez de valores fijos, basta con sobreescribir estas
+ * variables para que toda la UI cambie de tema sin tocar componentes.
+ * Esta regla va fuera de cualquier @layer para ganarle en prioridad a la
+ * capa "theme" de Tailwind sin depender del orden de las capas.
+ */
+:root[data-theme='light'] {
+	color-scheme: light;
+	--color-midnight-canvas: #eef1f6;
+	--color-deep-surface: #ffffff;
+	--color-indigo-surface: #ffffff;
+	--color-cobalt-surface: #e3e8f3;
+	--color-paper-white: #0b1120;
+	--color-fog: #3f4654;
+	--color-mist: #6b7280;
+	--color-steel-border: #dde1ea;
+	--shadow-card:
+		0 1px 2px rgba(15, 23, 42, 0.06), 0 8px 20px -10px rgba(15, 23, 42, 0.18);
+	--shadow-card-hover:
+		0 1px 2px rgba(15, 23, 42, 0.08), 0 12px 28px -10px rgba(15, 23, 42, 0.24);
 }
 
 @layer base {
