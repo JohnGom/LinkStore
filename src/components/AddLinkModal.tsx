@@ -57,22 +57,20 @@ export default function AddLinkModal({
 
 	return (
 		<div class="bg-scrim/70 fixed inset-0 z-50 flex items-center justify-center p-4">
-			<div class="shadow-card rounded-cards border-steel-border bg-indigo-surface w-full max-w-md border p-6">
+			<div class="rounded-cards border-line bg-surface w-full max-w-md border p-6">
 				<div class="mb-4 flex items-center justify-between">
-					<h2 class="font-display text-paper-white text-lg font-semibold">
-						Agregar enlace
-					</h2>
+					<h2 class="text-ink text-lg font-semibold">Agregar enlace</h2>
 					<button
 						type="button"
 						onClick={onClose}
-						class="text-mist hover:bg-cobalt-surface hover:text-paper-white rounded-full p-1"
+						class="text-subtle hover:bg-surface-elevated hover:text-ink rounded-full p-1"
 						aria-label="Cerrar"
 					>
 						✕
 					</button>
 				</div>
 				<form class="flex flex-col gap-4" onSubmit={handleSubmit}>
-					<label class="text-fog flex flex-col gap-1 text-sm font-thin">
+					<label class="text-muted flex flex-col gap-1 text-sm">
 						URL
 						<input
 							type="url"
@@ -83,16 +81,16 @@ export default function AddLinkModal({
 							onInput={(event) =>
 								setUrl((event.target as HTMLInputElement).value)
 							}
-							class="rounded-buttons border-steel-border bg-midnight-canvas text-paper-white placeholder:text-mist focus:border-signal-blue border px-3 py-2 text-sm outline-none disabled:opacity-60"
+							class="rounded-buttons border-line bg-canvas text-ink placeholder:text-subtle focus:border-primary border px-3 py-2 text-sm outline-none disabled:opacity-60"
 						/>
 					</label>
-					<p class="text-mist -mt-2 text-xs font-thin">
+					<p class="text-subtle -mt-2 text-xs">
 						El título, la descripción y el favicon se completan automáticamente
 						a partir de la URL.
 					</p>
 
 					<div class="flex flex-col gap-2">
-						<span class="text-fog text-sm font-thin">
+						<span class="text-muted text-sm">
 							Categorías (opcional, puedes elegir varias)
 						</span>
 
@@ -118,27 +116,27 @@ export default function AddLinkModal({
 							<button
 								type="button"
 								onClick={() => setCreatingCategory(true)}
-								class="text-signal-blue self-start text-xs font-thin"
+								class="text-ink decoration-primary self-start text-xs underline underline-offset-2 hover:decoration-2"
 							>
 								+ Nueva categoría
 							</button>
 						)}
 					</div>
 
-					{error && <p class="text-tag-coral text-sm font-thin">{error}</p>}
+					{error && <p class="text-danger text-sm">{error}</p>}
 					<div class="mt-2 flex justify-end gap-2">
 						<button
 							type="button"
 							onClick={onClose}
 							disabled={isSubmitting}
-							class="rounded-buttons border-paper-white/20 text-paper-white hover:bg-indigo-surface border px-4 py-2 text-sm font-thin disabled:opacity-60"
+							class="rounded-buttons border-line text-ink hover:bg-surface-elevated border px-4 py-2 text-sm font-medium disabled:opacity-60"
 						>
 							Cancelar
 						</button>
 						<button
 							type="submit"
 							disabled={isSubmitting}
-							class="rounded-buttons bg-signal-blue text-paper-white hover:bg-signal-blue/90 px-4 py-2 text-sm font-thin disabled:opacity-60"
+							class="rounded-buttons bg-primary text-on-primary hover:bg-primary-active px-4 py-2 text-sm font-semibold disabled:opacity-60"
 						>
 							{isSubmitting ? 'Guardando…' : 'Guardar'}
 						</button>

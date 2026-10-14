@@ -51,46 +51,47 @@ if (Astro.request.method === 'POST') {
 	<main class="flex min-h-screen items-center justify-center p-4">
 		<form
 			method="POST"
-			class="shadow-card rounded-cards border-steel-border bg-indigo-surface w-full max-w-sm border p-6"
+			class="rounded-cards border-line bg-surface w-full max-w-sm border p-6"
 		>
-			<h1 class="font-display text-paper-white mb-4 text-lg font-semibold">
-				Crear cuenta
-			</h1>
+			<h1 class="text-ink mb-4 text-lg font-semibold">Crear cuenta</h1>
 
-			{error && <p class="text-tag-coral mb-4 text-sm font-thin">{error}</p>}
+			{error && <p class="text-danger mb-4 text-sm">{error}</p>}
 
-			<label class="text-fog mb-3 flex flex-col gap-1 text-sm font-thin">
+			<label class="text-muted mb-3 flex flex-col gap-1 text-sm">
 				Correo
 				<input
 					type="email"
 					name="email"
 					required
 					value={email}
-					class="rounded-buttons border-steel-border bg-midnight-canvas text-paper-white focus:border-signal-blue border px-3 py-2 text-sm outline-none"
+					class="rounded-buttons border-line bg-canvas text-ink focus:border-primary border px-3 py-2 text-sm outline-none"
 				/>
 			</label>
 
-			<label class="text-fog mb-4 flex flex-col gap-1 text-sm font-thin">
+			<label class="text-muted mb-4 flex flex-col gap-1 text-sm">
 				Contraseña
 				<input
 					type="password"
 					name="password"
 					required
 					minlength="8"
-					class="rounded-buttons border-steel-border bg-midnight-canvas text-paper-white focus:border-signal-blue border px-3 py-2 text-sm outline-none"
+					class="rounded-buttons border-line bg-canvas text-ink focus:border-primary border px-3 py-2 text-sm outline-none"
 				/>
 			</label>
 
 			<button
 				type="submit"
-				class="rounded-buttons bg-signal-blue text-paper-white hover:bg-signal-blue/90 w-full px-4 py-2 text-sm font-thin"
+				class="rounded-buttons bg-primary text-on-primary hover:bg-primary-active w-full px-4 py-2 text-sm font-semibold"
 			>
 				Crear cuenta
 			</button>
 
-			<p class="text-mist mt-4 text-sm font-thin">
+			<p class="text-subtle mt-4 text-sm">
 				¿Ya tienes cuenta?{' '}
-				<a href="/login" class="text-signal-blue">
+				<a
+					href="/login"
+					class="text-ink decoration-primary hover:decoration-2 underline underline-offset-2"
+				>
 					Inicia sesión
 				</a>
 			</p>

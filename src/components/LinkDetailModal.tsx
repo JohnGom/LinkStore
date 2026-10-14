@@ -1,5 +1,6 @@
 import { useState } from 'preact/hooks';
 import CategoryChipPicker from './CategoryChipPicker';
+import HoldToDeleteButton from './HoldToDeleteButton';
 import type { Category, LinkItem } from '../lib/types';
 
 interface Props {
@@ -25,7 +26,6 @@ export default function LinkDetailModal({
 		link.categoryIds,
 	);
 	const [isSaving, setSaving] = useState(false);
-	const [isDeleting, setDeleting] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
 	function toggleCategory(categoryId: string) {
@@ -51,14 +51,6 @@ export default function LinkDetailModal({
 	}
 
 	async function handleDelete() {
-		if (
-			!window.confirm(
-				'¿Eliminar este enlace? Esta acción no se puede deshacer.',
-			)
-		)
-			return;
-
-		setDeleting(true);
 		setError(null);
 		try {
 			await onDelete();
@@ -66,29 +58,26 @@ export default function LinkDetailModal({
 			setError(
 				err instanceof Error ? err.message : 'No se pudo eliminar el enlace.',
 			);
-			setDeleting(false);
 		}
 	}
 
-	const isBusy = isSaving || isDeleting;
-
 	return (
 		<div class="bg-scrim/70 fixed inset-0 z-50 flex items-center justify-center p-4">
-			<div class="shadow-card rounded-cards border-steel-border bg-indigo-surface w-full max-w-lg border p-6">
+			<div class="rounded-cards border-line bg-surface w-full max-w-lg border p-6">
 				<div class="mb-4 flex items-start justify-between gap-3">
 					<div class="flex min-w-0 items-center gap-3">
 						<div class="rounded-images flex h-10 w-10 shrink-0 items-center justify-center bg-white">
 							<img src={link.faviconUrl} alt="" class="h-5 w-5" />
 						</div>
 						<div class="min-w-0">
-							<h2 class="font-display text-paper-white truncate text-lg font-semibold">
+							<h2 class="text-ink truncate text-lg font-semibold">
 								{link.title}
 							</h2>
 							<a
 								href={link.url}
 								target="_blank"
 								rel="noreferrer noopener"
-								class="text-signal-blue block truncate text-xs"
+								class="text-ink decoration-primary block truncate text-xs underline underline-offset-2 hover:decoration-2"
 							>
 								{link.url}
 							</a>
@@ -97,7 +86,7 @@ export default function LinkDetailModal({
 					<button
 						type="button"
 						onClick={onClose}
-						class="text-mist hover:bg-cobalt-surface hover:text-paper-white shrink-0 rounded-full p-1"
+						class="text-subtle hover:bg-surface-elevated hover:text-ink shrink-0 rounded-full p-1"
 						aria-label="Cerrar"
 					>
 						✕
@@ -105,69 +94,59 @@ export default function LinkDetailModal({
 				</div>
 
 				{link.description && (
-					<p class="text-fog mb-4 text-sm font-thin">{link.description}</p>
+					<p class="text-muted mb-4 text-sm">{link.description}</p>
 				)}
 
 				<div class="flex flex-col gap-4">
 					<div class="flex flex-col gap-2">
-						<span class="text-fog text-sm font-thin">Categorías</span>
+						<span class="text-muted text-sm">Categorías</span>
 						<CategoryChipPicker
 							categories={categories}
 							selectedIds={selectedCategoryIds}
 							onToggle={toggleCategory}
-							disabled={isBusy}
+							disabled={isSaving}
 						/>
 						{categories.length === 0 && (
-							<p class="text-mist text-xs font-thin">
-								Todavía no tienes categorías.
-							</p>
+							<p class="text-subtle text-xs">Todavía no tienes categorías.</p>
 						)}
 					</div>
 
-					<label class="text-fog flex flex-col gap-1 text-sm font-thin">
+					<label class="text-muted flex flex-col gap-1 text-sm">
 						Nota personal
 						<textarea
 							rows={3}
-							disabled={isBusy}
+							disabled={isSaving}
 							placeholder="Agrega información adicional sobre este enlace…"
 							value={personalNote}
 							onInput={(event) =>
 								setPersonalNote((event.target as HTMLTextAreaElement).value)
 							}
-							class="rounded-buttons border-steel-border bg-midnight-canvas text-paper-white placeholder:text-mist focus:border-signal-blue resize-none border px-3 py-2 text-sm outline-none disabled:opacity-60"
+							class="rounded-buttons border-line bg-canvas text-ink placeholder:text-subtle focus:border-primary resize-none border px-3 py-2 text-sm outline-none disabled:opacity-60"
 						/>
 					</label>
 
-					{error && <p class="text-tag-coral text-sm font-thin">{error}</p>}
+					{error && <p class="text-danger text-sm">{error}</p>}
 
-					<div class="mt-2 flex items-center justify-between gap-2">
+					<div class="flex justify-end gap-2">
 						<button
 							type="button"
-							onClick={handleDelete}
-							disabled={isBusy}
-							class="text-tag-coral rounded-buttons border border-current px-4 py-2 text-sm font-thin hover:bg-current/10 disabled:opacity-60"
+							onClick={onClose}
+							disabled={isSaving}
+							class="rounded-buttons border-line text-ink hover:bg-surface-elevated border px-4 py-2 text-sm font-medium disabled:opacity-60"
 						>
-							{isDeleting ? 'Eliminando…' : 'Eliminar enlace'}
+							Cancelar
 						</button>
-						<div class="flex gap-2">
-							<button
-								type="button"
-								onClick={onClose}
-								disabled={isBusy}
-								class="rounded-buttons border-paper-white/20 text-paper-white hover:bg-indigo-surface border px-4 py-2 text-sm font-thin disabled:opacity-60"
-							>
-								Cancelar
-							</button>
-							<button
-								type="button"
-								onClick={handleSave}
-								disabled={isBusy}
-								class="rounded-buttons bg-signal-blue text-paper-white hover:bg-signal-blue/90 px-4 py-2 text-sm font-thin disabled:opacity-60"
-							>
-								{isSaving ? 'Guardando…' : 'Guardar cambios'}
-							</button>
-						</div>
+						<button
+							type="button"
+							onClick={handleSave}
+							disabled={isSaving}
+							class="rounded-buttons bg-primary text-on-primary hover:bg-primary-active px-4 py-2 text-sm font-semibold disabled:opacity-60"
+						>
+							{isSaving ? 'Guardando…' : 'Guardar cambios'}
+						</button>
 					</div>
+
+					<HoldToDeleteButton onConfirm={handleDelete} disabled={isSaving} />
 				</div>
 			</div>
 		</div>

@@ -55,7 +55,7 @@ export default function CategorySidebar({
 				<button
 					type="button"
 					onClick={() => setCreating(true)}
-					class="text-signal-blue rounded-buttons hover:bg-cobalt-surface mt-2 px-3 py-2 text-left text-sm font-thin"
+					class="text-ink decoration-primary rounded-buttons mt-2 px-3 py-2 text-left text-sm font-medium underline underline-offset-2 hover:decoration-2"
 				>
 					+ Nueva categoría
 				</button>
@@ -81,22 +81,24 @@ function SidebarItem({
 		<button
 			type="button"
 			onClick={onClick}
-			class={`rounded-buttons flex items-center justify-between px-3 py-2 text-left text-sm font-thin transition ${
+			class={`rounded-buttons flex items-center justify-between px-3 py-2 text-left text-sm font-medium transition ${
 				active
-					? 'bg-signal-blue text-paper-white'
-					: 'text-fog hover:bg-cobalt-surface'
+					? 'bg-primary text-on-primary'
+					: 'text-muted hover:bg-surface-elevated'
 			}`}
 		>
 			<span class="flex items-center gap-2">
 				{color && (
 					<span
 						class="h-2 w-2 rounded-full"
-						style={{ backgroundColor: active ? '#fff' : color }}
+						style={{
+							backgroundColor: active ? 'var(--color-on-primary)' : color,
+						}}
 					/>
 				)}
 				{label}
 			</span>
-			<span class={active ? 'text-paper-white/70' : 'text-mist'}>{count}</span>
+			<span class={active ? 'text-on-primary/70' : 'text-subtle'}>{count}</span>
 		</button>
 	);
 }

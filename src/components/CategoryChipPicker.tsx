@@ -25,8 +25,8 @@ export default function CategoryChipPicker({
 						type="button"
 						disabled={disabled}
 						onClick={() => onToggle(category.id)}
-						class={`rounded-tags border px-3 py-1 text-xs font-thin tracking-wide uppercase transition disabled:opacity-60 ${
-							selected ? 'text-paper-white' : 'text-fog border-steel-border'
+						class={`rounded-tags border px-3 py-1 text-xs font-medium tracking-wide uppercase transition disabled:opacity-60 ${
+							selected ? 'text-white' : 'text-muted border-line'
 						}`}
 						style={
 							selected

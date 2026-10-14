@@ -22,3 +22,8 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# agent skills installed locally (dev-time tooling, not part of the app)
+.agents/
+.claude/skills/
+skills-lock.json

@@ -134,18 +134,16 @@ export default function Dashboard({ initialCategories, initialLinks }: Props) {
 	return (
 		<div class="mx-auto flex max-w-6xl gap-6 px-4 py-6 lg:px-8">
 			<aside
-				class={`border-steel-border bg-indigo-surface fixed inset-y-0 left-0 z-40 w-64 transform border-r p-4 transition-transform lg:static lg:z-auto lg:w-56 lg:shrink-0 lg:translate-x-0 lg:border-none lg:bg-transparent lg:p-0 ${
+				class={`border-line bg-surface fixed inset-y-0 left-0 z-40 w-64 transform border-r p-4 transition-transform lg:static lg:z-auto lg:w-56 lg:shrink-0 lg:translate-x-0 lg:border-none lg:bg-transparent lg:p-0 ${
 					isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
 				}`}
 			>
 				<div class="mb-4 flex items-center justify-between lg:hidden">
-					<span class="font-display text-paper-white font-semibold">
-						Categorías
-					</span>
+					<span class="text-ink font-semibold">Categorías</span>
 					<button
 						type="button"
 						onClick={() => setSidebarOpen(false)}
-						class="text-mist hover:bg-indigo-surface rounded-full p-1"
+						class="text-subtle hover:bg-surface-elevated rounded-full p-1"
 						aria-label="Cerrar categorías"
 					>
 						✕
@@ -178,7 +176,7 @@ export default function Dashboard({ initialCategories, initialLinks }: Props) {
 					<button
 						type="button"
 						onClick={() => setSidebarOpen(true)}
-						class="rounded-buttons border-steel-border text-fog border px-3 py-2 text-sm font-thin lg:hidden"
+						class="rounded-buttons border-line text-muted border px-3 py-2 text-sm font-medium lg:hidden"
 					>
 						Categorías
 					</button>
@@ -190,19 +188,19 @@ export default function Dashboard({ initialCategories, initialLinks }: Props) {
 							setSearchQuery((event.target as HTMLInputElement).value)
 						}
 						placeholder="Buscar por nombre…"
-						class="rounded-buttons border-steel-border bg-indigo-surface text-paper-white placeholder:text-mist focus:border-signal-blue min-w-0 flex-1 border px-3 py-2 text-sm outline-none"
+						class="rounded-buttons border-line bg-surface text-ink placeholder:text-subtle focus:border-primary min-w-0 flex-1 border px-3 py-2 text-sm outline-none"
 					/>
 
 					<button
 						type="button"
 						onClick={() => setModalOpen(true)}
-						class="rounded-buttons bg-signal-blue text-paper-white hover:bg-signal-blue/90 px-4 py-2 text-sm font-thin whitespace-nowrap"
+						class="rounded-buttons bg-primary text-on-primary hover:bg-primary-active px-4 py-2 text-sm font-semibold whitespace-nowrap"
 					>
 						+ Agregar enlace
 					</button>
 				</div>
 
-				<h2 class="font-display text-mist mb-4 hidden text-sm font-medium lg:block">
+				<h2 class="text-subtle mb-4 hidden text-sm font-medium lg:block">
 					{selectedCategoryId
 						? categoryById.get(selectedCategoryId)?.name
 						: 'Todos los enlaces'}{' '}
@@ -210,13 +208,13 @@ export default function Dashboard({ initialCategories, initialLinks }: Props) {
 				</h2>
 
 				{visibleLinks.length === 0 ? (
-					<div class="rounded-cards border-steel-border text-mist flex flex-col items-center gap-2 border border-dashed py-16 text-center">
-						<p class="text-fog font-thin">
+					<div class="rounded-cards border-line text-subtle flex flex-col items-center gap-2 border border-dashed py-16 text-center">
+						<p class="text-muted">
 							{links.length === 0
 								? 'No hay enlaces en esta categoría todavía.'
 								: 'Ningún enlace coincide con tu búsqueda.'}
 						</p>
-						<p class="text-sm font-thin">Agrega uno con el botón de arriba.</p>
+						<p class="text-sm">Agrega uno con el botón de arriba.</p>
 					</div>
 				) : (
 					<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">

@@ -6,15 +6,9 @@ interface Props {
 	onView: () => void;
 }
 
-// Rotación determinística (-6° a 6°) a partir de un id, para el gesto de "tag flotante" sin que salte en cada render.
-function rotationFor(id: string) {
-	const code = id.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
-	return (code % 13) - 6;
-}
-
 export default function LinkCard({ link, categories, onView }: Props) {
 	return (
-		<div class="shadow-card hover:shadow-card-hover group rounded-cards border-steel-border hover:border-paper-white/20 bg-indigo-surface flex flex-col gap-4 border p-6 transition hover:-translate-y-0.5">
+		<div class="shadow-card hover:shadow-card-hover group rounded-cards border-line hover:border-primary/60 bg-surface ease-standard flex flex-col gap-4 border p-6 transition">
 			<div class="flex items-start gap-3">
 				<a
 					href={link.url}
@@ -26,10 +20,10 @@ export default function LinkCard({ link, categories, onView }: Props) {
 						<img src={link.faviconUrl} alt="" class="h-5 w-5" />
 					</div>
 					<div class="min-w-0">
-						<h3 class="font-display text-paper-white truncate text-base font-semibold">
+						<h3 class="text-ink truncate text-base font-semibold">
 							{link.title}
 						</h3>
-						<span class="text-mist truncate text-xs">{link.domain}</span>
+						<span class="text-subtle truncate text-xs">{link.domain}</span>
 					</div>
 				</a>
 				<button
@@ -37,7 +31,7 @@ export default function LinkCard({ link, categories, onView }: Props) {
 					onClick={onView}
 					aria-label="Ver detalles del enlace"
 					title="Ver detalles"
-					class="text-mist hover:bg-cobalt-surface hover:text-paper-white shrink-0 rounded-full p-1.5"
+					class="text-subtle hover:bg-surface-elevated hover:text-ink shrink-0 rounded-full p-1.5"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -53,18 +47,15 @@ export default function LinkCard({ link, categories, onView }: Props) {
 				</button>
 			</div>
 
-			<p class="text-fog line-clamp-2 text-sm font-thin">{link.description}</p>
+			<p class="text-muted line-clamp-2 text-sm">{link.description}</p>
 
 			{categories.length > 0 && (
 				<div class="mt-auto flex flex-wrap gap-1.5">
 					{categories.map((category) => (
 						<span
 							key={category.id}
-							class="rounded-tags text-paper-white w-fit px-3 py-1 text-xs font-thin tracking-wide uppercase"
-							style={{
-								backgroundColor: category.color,
-								transform: `rotate(${rotationFor(link.id + category.id)}deg)`,
-							}}
+							class="rounded-tags w-fit px-3 py-1 text-xs font-medium tracking-wide text-white uppercase"
+							style={{ backgroundColor: category.color }}
 						>
 							{category.name}
 						</span>

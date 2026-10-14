@@ -1,23 +1,28 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 
 /*
- * Design tokens adapted from DESIGN.md (Copilot Money style reference):
- * midnight-canvas dark theme, neomorphic inset-shadow surfaces, a single
- * chromatic accent (Signal Blue) and a candy-colored tag palette for
- * categories. 'Jokker' / 'Matter Variable Thin' are not available fonts,
- * so we use the substitutes the reference itself suggests.
+ * Design tokens adapted from DESIGN.md (Binance style reference): a flat,
+ * near-black canvas with a single high-voltage yellow accent carrying every
+ * primary action, hairline borders instead of heavy shadows, and modest
+ * type weights (the system leans on size and the accent color, not bold
+ * weight, for hierarchy). BinanceNova/BinancePlex are not available fonts,
+ * so we use Inter — the substitute the reference itself suggests — for
+ * every role.
  */
 @theme {
-	--color-midnight-canvas: #000814;
-	--color-deep-surface: #010d1e;
-	--color-indigo-surface: #001533;
-	--color-cobalt-surface: #00215e;
-	--color-paper-white: #ffffff;
-	--color-fog: #ccced0;
-	--color-mist: #999ca1;
-	--color-steel-border: #11263b;
-	--color-signal-blue: #1c6cff;
+	--color-canvas: #0b0e11;
+	--color-surface: #1e2329;
+	--color-surface-elevated: #2b3139;
+	--color-line: #2b3139;
+	--color-ink: #ffffff;
+	--color-muted: #b4bcc7;
+	--color-subtle: #7b8794;
+	--color-primary: #fcd535;
+	--color-primary-active: #f0b90b;
+	--color-on-primary: #181a20;
+	--color-danger: #f6465d;
+
 	--color-tag-coral: #ff4433;
 	--color-tag-lime: #00cc4b;
 	--color-tag-tangerine: #ff8833;
@@ -32,20 +37,18 @@
 	/* Siempre oscuro, independiente del tema — fondo de modales/overlays. */
 	--color-scrim: #00030a;
 
-	--font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
-	--font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+	--font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 
-	--radius-tags: 20px;
-	--radius-cards: 24px;
-	--radius-buttons: 16px;
-	--radius-images: 8px;
+	--radius-tags: 9999px;
+	--radius-cards: 12px;
+	--radius-buttons: 8px;
+	--radius-images: 6px;
 
-	--shadow-card:
-		0 1px 0 0 rgba(255, 255, 255, 0.04) inset,
-		0 8px 20px -10px rgba(0, 0, 0, 0.6);
-	--shadow-card-hover:
-		0 1px 0 0 rgba(255, 255, 255, 0.06) inset,
-		0 12px 28px -10px rgba(0, 0, 0, 0.7);
+	--ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+	/* Diseño plano: sin sombra en reposo, solo una elevación sutil al interactuar. */
+	--shadow-card: none;
+	--shadow-card-hover: 0 8px 20px -8px rgba(0, 0, 0, 0.45);
 }
 
 :root {
@@ -62,24 +65,20 @@
  */
 :root[data-theme='light'] {
 	color-scheme: light;
-	--color-midnight-canvas: #eef1f6;
-	--color-deep-surface: #ffffff;
-	--color-indigo-surface: #ffffff;
-	--color-cobalt-surface: #e3e8f3;
-	--color-paper-white: #0b1120;
-	--color-fog: #3f4654;
-	--color-mist: #6b7280;
-	--color-steel-border: #dde1ea;
-	--shadow-card:
-		0 1px 2px rgba(15, 23, 42, 0.06), 0 8px 20px -10px rgba(15, 23, 42, 0.18);
-	--shadow-card-hover:
-		0 1px 2px rgba(15, 23, 42, 0.08), 0 12px 28px -10px rgba(15, 23, 42, 0.24);
+	--color-canvas: #f5f5f6;
+	--color-surface: #ffffff;
+	--color-surface-elevated: #eaecef;
+	--color-line: #e2e5ea;
+	--color-ink: #181a20;
+	--color-muted: #565f6b;
+	--color-subtle: #868f9b;
+	--shadow-card-hover: 0 8px 20px -8px rgba(15, 23, 42, 0.16);
 }
 
 @layer base {
 	body {
-		font-family: var(--font-body);
-		background-color: var(--color-midnight-canvas);
-		color: var(--color-paper-white);
+		font-family: var(--font-sans);
+		background-color: var(--color-canvas);
+		color: var(--color-ink);
 	}
 }

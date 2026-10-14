@@ -40,12 +40,12 @@ export default function CategoryCreateForm({ onCreate, onCancel }: Props) {
 					placeholder="Nombre de categoría"
 					value={name}
 					onInput={(event) => setName((event.target as HTMLInputElement).value)}
-					class="rounded-buttons border-steel-border bg-midnight-canvas text-paper-white placeholder:text-mist focus:border-signal-blue flex-1 border px-3 py-2 text-sm outline-none disabled:opacity-60"
+					class="rounded-buttons border-line bg-canvas text-ink placeholder:text-subtle focus:border-primary flex-1 border px-3 py-2 text-sm outline-none disabled:opacity-60"
 				/>
 				<button
 					type="submit"
 					disabled={isSubmitting}
-					class="rounded-buttons bg-signal-blue text-paper-white hover:bg-signal-blue/90 px-3 py-2 text-sm font-thin whitespace-nowrap disabled:opacity-60"
+					class="rounded-buttons bg-primary text-on-primary hover:bg-primary-active px-3 py-2 text-sm font-semibold whitespace-nowrap disabled:opacity-60"
 				>
 					{isSubmitting ? 'Creando…' : 'Crear'}
 				</button>
@@ -54,13 +54,13 @@ export default function CategoryCreateForm({ onCreate, onCancel }: Props) {
 						type="button"
 						onClick={onCancel}
 						disabled={isSubmitting}
-						class="text-mist hover:text-paper-white px-2 text-sm font-thin disabled:opacity-60"
+						class="text-subtle hover:text-ink px-2 text-sm disabled:opacity-60"
 					>
 						Cancelar
 					</button>
 				)}
 			</div>
-			{error && <p class="text-tag-coral text-xs font-thin">{error}</p>}
+			{error && <p class="text-danger text-xs">{error}</p>}
 		</form>
 	);
 }
