@@ -7,7 +7,7 @@ import { hashPassword } from '../lib/password';
 import { createSession, setSessionCookie } from '../lib/session';
 
 if (Astro.locals.user) {
-	return Astro.redirect('/');
+	return Astro.redirect('/app');
 }
 
 let error: string | null = null;
@@ -41,7 +41,7 @@ if (Astro.request.method === 'POST') {
 				.returning();
 			const session = await createSession(user.id);
 			setSessionCookie(Astro.cookies, session);
-			return Astro.redirect('/');
+			return Astro.redirect('/app');
 		}
 	}
 }

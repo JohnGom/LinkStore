@@ -1,32 +1,137 @@
 ---
-import { eq } from 'drizzle-orm';
-import Dashboard from '../components/Dashboard';
-import Header from '../components/Header.astro';
-import { db } from '../db/client';
-import { categories } from '../db/schema';
+import ThemeToggle from '../components/ThemeToggle.astro';
 import Layout from '../layouts/Layout.astro';
-import { getLinksForUser } from '../lib/linkQueries';
-import { mapCategory } from '../lib/mappers';
 
-const { user } = Astro.locals;
-
-if (!user) {
-	return Astro.redirect('/login');
+if (Astro.locals.user) {
+	return Astro.redirect('/app');
 }
 
-const [categoryRows, initialLinks] = await Promise.all([
-	db.select().from(categories).where(eq(categories.userId, user.id)),
-	getLinksForUser(user.id),
-]);
-
-const initialCategories = categoryRows.map(mapCategory);
+const FEATURES = [
+	{
+		icon: '🔗',
+		title: 'Guarda cualquier enlace',
+		description:
+			'Pega la URL y listo: título, descripción y favicon se completan automáticamente.',
+	},
+	{
+		icon: '🏷️',
+		title: 'Categorías múltiples',
+		description:
+			'Organiza cada enlace en una o varias categorías, a tu manera.',
+	},
+	{
+		icon: '🔍',
+		title: 'Búsqueda instantánea',
+		description: 'Encuentra lo que buscas por nombre o dominio en segundos.',
+	},
+	{
+		icon: '📝',
+		title: 'Notas personales',
+		description: 'Agrega contexto propio a cada enlace que guardes.',
+	},
+	{
+		icon: '🌓',
+		title: 'Modo claro y oscuro',
+		description: 'La interfaz se adapta a tu preferencia, cuando quieras.',
+	},
+	{
+		icon: '🔒',
+		title: 'Privado y tuyo',
+		description: 'Tu cuenta, tus enlaces. Nadie más los ve.',
+	},
+];
 ---
 
-<Layout title="LinksStore">
-	<Header userEmail={user.email} />
-	<Dashboard
-		client:load
-		initialCategories={initialCategories}
-		initialLinks={initialLinks}
-	/>
+<Layout title="LinksStore — guarda y organiza tus enlaces favoritos">
+	<div class="flex min-h-screen flex-col">
+		<header class="border-line border-b">
+			<div class="mx-auto flex max-w-6xl items-center gap-2 px-4 py-4 lg:px-8">
+				<span class="rounded-buttons bg-primary text-on-primary flex h-8 w-8 items-center justify-center text-base">
+					🔗
+				</span>
+				<span class="text-ink font-sans text-lg font-semibold">LinksStore</span>
+
+				<div class="ml-auto flex items-center gap-3">
+					<ThemeToggle />
+					<a
+						href="/login"
+						class="rounded-buttons border-line text-ink hover:bg-surface-elevated border px-3 py-1.5 text-sm font-medium"
+					>
+						Iniciar sesión
+					</a>
+					<a
+						href="/register"
+						class="rounded-buttons bg-primary text-on-primary hover:bg-primary-active hidden px-3 py-1.5 text-sm font-semibold sm:inline-block"
+					>
+						Crear cuenta
+					</a>
+				</div>
+			</div>
+		</header>
+
+		<main class="flex-1">
+			<section class="mx-auto max-w-4xl px-4 py-20 text-center lg:px-8 lg:py-28">
+				<h1 class="text-ink text-4xl font-bold tracking-tight text-balance sm:text-5xl lg:text-6xl">
+					Guarda cualquier enlace.
+					<br />
+					Encuéntralo cuando lo necesites.
+				</h1>
+				<p class="text-muted mx-auto mt-6 max-w-xl text-lg text-balance">
+					LinksStore es tu bóveda personal de páginas útiles — con categorías,
+					búsqueda instantánea y notas propias, todo en un solo lugar.
+				</p>
+				<div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+					<a
+						href="/register"
+						class="rounded-buttons bg-primary text-on-primary hover:bg-primary-active px-6 py-3 text-sm font-semibold"
+					>
+						Crear cuenta gratis
+					</a>
+					<a
+						href="/login"
+						class="rounded-buttons border-line text-ink hover:bg-surface-elevated border px-6 py-3 text-sm font-medium"
+					>
+						Iniciar sesión
+					</a>
+				</div>
+			</section>
+
+			<section class="border-line border-t">
+				<div class="mx-auto max-w-6xl px-4 py-16 lg:px-8">
+					<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+						{FEATURES.map((feature) => (
+							<div class="rounded-cards border-line bg-surface border p-6">
+								<span class="text-2xl">{feature.icon}</span>
+								<h3 class="text-ink mt-3 font-semibold">{feature.title}</h3>
+								<p class="text-muted mt-1 text-sm">{feature.description}</p>
+							</div>
+						))}
+					</div>
+				</div>
+			</section>
+
+			<section class="border-line border-t">
+				<div class="mx-auto max-w-2xl px-4 py-16 text-center lg:px-8">
+					<h2 class="text-ink text-2xl font-semibold">
+						Deja de perder enlaces útiles
+					</h2>
+					<p class="text-muted mt-2 text-sm">
+						Crea tu cuenta gratis y empieza a guardar en menos de un minuto.
+					</p>
+					<a
+						href="/register"
+						class="rounded-buttons bg-primary text-on-primary hover:bg-primary-active mt-6 inline-block px-6 py-3 text-sm font-semibold"
+					>
+						Crear cuenta gratis
+					</a>
+				</div>
+			</section>
+		</main>
+
+		<footer class="border-line border-t">
+			<div class="text-subtle mx-auto max-w-6xl px-4 py-6 text-center text-xs lg:px-8">
+				LinksStore · hecho para no volver a perder un enlace
+			</div>
+		</footer>
+	</div>
 </Layout>

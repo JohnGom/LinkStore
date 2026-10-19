@@ -1,4 +1,6 @@
 ---
+import ThemeToggle from './ThemeToggle.astro';
+
 interface Props {
 	userEmail?: string;
 }
@@ -8,22 +10,15 @@ const { userEmail } = Astro.props;
 
 <header class="border-line border-b">
 	<div class="mx-auto flex max-w-6xl items-center gap-2 px-4 py-4 lg:px-8">
-		<span class="rounded-buttons bg-primary text-on-primary flex h-8 w-8 items-center justify-center text-base">
-			🔗
-		</span>
-		<span class="text-ink font-sans text-lg font-semibold">LinksStore</span>
+		<a href="/app" class="flex items-center gap-2">
+			<span class="rounded-buttons bg-primary text-on-primary flex h-8 w-8 items-center justify-center text-base">
+				🔗
+			</span>
+			<span class="text-ink font-sans text-lg font-semibold">LinksStore</span>
+		</a>
 
 		<div class="ml-auto flex items-center gap-3">
-			<button
-				id="theme-toggle"
-				type="button"
-				aria-label="Cambiar tema claro/oscuro"
-				title="Cambiar tema"
-				class="border-line bg-surface text-ink hover:border-primary flex h-9 w-9 items-center justify-center rounded-full border transition-colors"
-			>
-				<span class="theme-icon-dark">🌙</span>
-				<span class="theme-icon-light">☀️</span>
-			</button>
+			<ThemeToggle />
 
 			{userEmail && (
 				<>
@@ -41,33 +36,3 @@ const { userEmail } = Astro.props;
 		</div>
 	</div>
 </header>
-
-<style>
-	.theme-icon-light {
-		display: none;
-	}
-	:global(:root[data-theme='light']) .theme-icon-dark {
-		display: none;
-	}
-	:global(:root[data-theme='light']) .theme-icon-light {
-		display: inline;
-	}
-</style>
-
-<script is:inline>
-	(function () {
-		const btn = document.getElementById('theme-toggle');
-		if (!btn) return;
-		btn.addEventListener('click', function () {
-			const current =
-				document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
-			const next = current === 'light' ? 'dark' : 'light';
-			document.documentElement.dataset.theme = next;
-			try {
-				localStorage.setItem('theme', next);
-			} catch {
-				// localStorage puede no estar disponible (modo privado); el tema no persiste entre recargas.
-			}
-		});
-	})();
-</script>
