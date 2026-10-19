@@ -54,7 +54,7 @@ export default function CategoryCreateForm({ onCreate, onCancel }: Props) {
 						type="button"
 						onClick={onCancel}
 						disabled={isSubmitting}
-						class="text-subtle hover:text-ink px-2 text-sm disabled:opacity-60"
+						class="rounded-buttons border-line bg-surface text-ink hover:bg-surface-elevated border px-3 py-2 text-sm font-medium whitespace-nowrap disabled:opacity-60"
 					>
 						Cancelar
 					</button>
