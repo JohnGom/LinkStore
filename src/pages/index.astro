@@ -1,4 +1,5 @@
 ---
+import Logo from '../components/Logo.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
 import Layout from '../layouts/Layout.astro';
 
@@ -44,24 +45,21 @@ const FEATURES = [
 
 <Layout title="LinksStore — guarda y organiza tus enlaces favoritos">
 	<div class="flex min-h-screen flex-col">
-		<header class="border-line border-b">
-			<div class="mx-auto flex max-w-6xl items-center gap-2 px-4 py-4 lg:px-8">
-				<span class="rounded-buttons bg-primary text-on-primary flex h-8 w-8 items-center justify-center text-base">
-					🔗
-				</span>
-				<span class="text-ink font-sans text-lg font-semibold">LinksStore</span>
+		<header class="sticky top-0 z-50 px-4 pt-4 lg:px-8">
+			<div class="rise border-line bg-surface/80 rounded-cards mx-auto flex max-w-6xl items-center gap-2 border px-4 py-3 backdrop-blur-md">
+				<Logo href="/" />
 
 				<div class="ml-auto flex items-center gap-3">
 					<ThemeToggle />
 					<a
 						href="/login"
-						class="rounded-buttons border-line text-ink hover:bg-surface-elevated border px-3 py-1.5 text-sm font-medium"
+						class="rounded-buttons border-line text-ink hover:bg-surface-elevated border px-3 py-1.5 text-sm font-medium transition hover:-translate-y-0.5"
 					>
 						Iniciar sesión
 					</a>
 					<a
 						href="/register"
-						class="rounded-buttons bg-primary text-on-primary hover:bg-primary-active hidden px-3 py-1.5 text-sm font-semibold sm:inline-block"
+						class="rounded-buttons bg-primary text-on-primary hover:bg-primary-active hidden px-3 py-1.5 text-sm font-semibold transition hover:-translate-y-0.5 sm:inline-block"
 					>
 						Crear cuenta
 					</a>
@@ -71,25 +69,34 @@ const FEATURES = [
 
 		<main class="flex-1">
 			<section class="mx-auto max-w-4xl px-4 py-20 text-center lg:px-8 lg:py-28">
-				<h1 class="text-ink text-4xl font-bold tracking-tight text-balance sm:text-5xl lg:text-6xl">
-					Guarda cualquier enlace.
-					<br />
-					Encuéntralo cuando lo necesites.
+				<span class="rise rise-1 border-primary/30 bg-surface/60 text-muted mx-auto inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-medium backdrop-blur-sm">
+					<span class="bg-primary h-2 w-2 rounded-full"></span>
+					Tu gestor personal de enlaces
+				</span>
+
+				<h1 class="text-ink mt-6 text-4xl font-bold tracking-tight text-balance sm:text-5xl lg:text-6xl">
+					<span class="rise rise-2 block">Guarda cualquier enlace.</span>
+					<span class="rise rise-3 block">
+						<span class="text-muted">Encuéntralo </span>
+						<span class="text-primary">cuando lo necesites.</span>
+					</span>
 				</h1>
-				<p class="text-muted mx-auto mt-6 max-w-xl text-lg text-balance">
+
+				<p class="rise rise-4 text-muted mx-auto mt-6 max-w-xl text-lg text-balance">
 					LinksStore es tu bóveda personal de páginas útiles — con categorías,
 					búsqueda instantánea y notas propias, todo en un solo lugar.
 				</p>
-				<div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+
+				<div class="rise rise-5 mt-8 flex flex-wrap items-center justify-center gap-3">
 					<a
 						href="/register"
-						class="rounded-buttons bg-primary text-on-primary hover:bg-primary-active px-6 py-3 text-sm font-semibold"
+						class="rounded-buttons bg-primary text-on-primary hover:bg-primary-active px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
 					>
 						Crear cuenta gratis
 					</a>
 					<a
 						href="/login"
-						class="rounded-buttons border-line text-ink hover:bg-surface-elevated border px-6 py-3 text-sm font-medium"
+						class="rounded-buttons border-line text-ink hover:bg-surface-elevated border px-6 py-3 text-sm font-medium transition hover:-translate-y-0.5"
 					>
 						Iniciar sesión
 					</a>
@@ -100,7 +107,7 @@ const FEATURES = [
 				<div class="mx-auto max-w-6xl px-4 py-16 lg:px-8">
 					<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 						{FEATURES.map((feature) => (
-							<div class="rounded-cards border-line bg-surface border p-6">
+							<div class="rounded-cards border-line bg-surface hover:border-primary/50 border p-6 transition hover:-translate-y-0.5">
 								<span class="text-2xl">{feature.icon}</span>
 								<h3 class="text-ink mt-3 font-semibold">{feature.title}</h3>
 								<p class="text-muted mt-1 text-sm">{feature.description}</p>
@@ -120,7 +127,7 @@ const FEATURES = [
 					</p>
 					<a
 						href="/register"
-						class="rounded-buttons bg-primary text-on-primary hover:bg-primary-active mt-6 inline-block px-6 py-3 text-sm font-semibold"
+						class="rounded-buttons bg-primary text-on-primary hover:bg-primary-active mt-6 inline-block px-6 py-3 text-sm font-semibold transition hover:-translate-y-0.5"
 					>
 						Crear cuenta gratis
 					</a>
@@ -135,3 +142,43 @@ const FEATURES = [
 		</footer>
 	</div>
 </Layout>
+
+<style>
+	@keyframes rise-in {
+		from {
+			opacity: 0;
+			transform: translateY(16px);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+
+	.rise {
+		animation: rise-in 0.7s var(--ease-standard) backwards;
+	}
+	.rise-1 {
+		animation-delay: 0.05s;
+	}
+	.rise-2 {
+		animation-delay: 0.14s;
+	}
+	.rise-3 {
+		animation-delay: 0.22s;
+	}
+	.rise-4 {
+		animation-delay: 0.3s;
+	}
+	.rise-5 {
+		animation-delay: 0.38s;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.rise {
+			animation: none;
+			opacity: 1;
+			transform: none;
+		}
+	}
+</style>

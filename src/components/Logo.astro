@@ -1,0 +1,18 @@
+---
+interface Props {
+	href?: string;
+}
+
+const { href = '/' } = Astro.props;
+---
+
+<a href={href} class="flex items-center gap-2.5">
+	<img
+		src="/logo-square.png"
+		alt="LinksStore"
+		width="36"
+		height="36"
+		class="rounded-buttons h-9 w-9 object-cover"
+	/>
+	<span class="text-ink font-sans text-lg font-semibold">LinksStore</span>
+</a>

@@ -1,4 +1,5 @@
 ---
+import Logo from './Logo.astro';
 import ThemeToggle from './ThemeToggle.astro';
 
 interface Props {
@@ -10,12 +11,7 @@ const { userEmail } = Astro.props;
 
 <header class="border-line border-b">
 	<div class="mx-auto flex max-w-6xl items-center gap-2 px-4 py-4 lg:px-8">
-		<a href="/app" class="flex items-center gap-2">
-			<span class="rounded-buttons bg-primary text-on-primary flex h-8 w-8 items-center justify-center text-base">
-				🔗
-			</span>
-			<span class="text-ink font-sans text-lg font-semibold">LinksStore</span>
-		</a>
+		<Logo href="/app" />
 
 		<div class="ml-auto flex items-center gap-3">
 			<ThemeToggle />
